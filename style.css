@@ -1,0 +1,73 @@
+body {
+    background: #ffbcd9;
+    margin: 0;
+    border: 10px solid #ff70ae;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+}
+
+#title {
+    font-family: monospace;
+    font-size: 5vh;
+    font-style: italic;
+    text-align: center;
+    text-decoration: underline;
+    color: #123456;
+}
+
+#towerBox {
+    width: 80vw;
+    height: 45vh;
+    background: #bcffc1;
+    margin: 0 auto;
+    border-radius: 10px;
+    box-shadow: 4px 4px 16px 0px rgba(0,0,0,0.75);
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
+#towerBase {
+    background: #BA8C63;
+    width: 70vw;
+    height: 3vh;
+    bottom: 0px;
+    position: absolute;
+    bottom: 30px;
+    border-radius: 30px;
+    box-shadow: inset 0px 0px 16px 1px rgba(0,0,0,0.6);
+}
+
+.tower {
+    width: 15px;
+    height: 30vh;
+    background: #F57D00;
+    position: absolute;
+    bottom: 30px;
+    box-shadow: inset 0px 0px 16px 1px rgba(0,0,0,0.6);
+}
+
+ul {
+    list-style: none;
+    display: flex;
+    justify-content: space-evenly;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    left: 100px;
+}
+
+@media (min-width: 900px) {
+    .tower {
+        width: 25px;
+    }
+    #towerBox {
+        width: 60vw;
+    }
+    #towerBase {
+        width: 50vw;
+    }
+}
