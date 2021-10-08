@@ -5,6 +5,12 @@ let ringDisp = document.getElementById("ringDisp");
 let towerDisp = document.getElementById("towerDisp");
 let lengthOfRing = 45;
 let towerList = document.getElementById("towerList");
+let towers = {};
+let isRingSelected = false;
+var selectedTower;
+let noOfRings;
+let noOfTowers;
+    
 
 function setDefaultState() {
     ringDisp.innerText = 8;
@@ -13,8 +19,8 @@ function setDefaultState() {
 }
 
 function setState() {
-    let noOfRings = parseInt(ringDisp.innerText);
-    let noOfTowers = parseInt(towerDisp.innerText);
+    noOfRings = parseInt(ringDisp.innerText);
+    noOfTowers = parseInt(towerDisp.innerText);
     
     towerList.innerHTML = "";
     for (var i=0; i<noOfTowers; i++) {
@@ -22,11 +28,12 @@ function setState() {
         var div = document.createElement("div");
         div.setAttribute("id", i+1);
         div.setAttribute("class", "tower");
+        div.setAttribute("onclick", "moveOn(this.id)");
         div.style.background = towerColors[i];
         li.appendChild(div);
         towerList.appendChild(li);
+        towers[i+1] = [];
     }
-    let firstRing = document.getElementById("1");
     let bottomPadding = 3;
     for (var i=0; i<noOfRings; i++) {
         var div = document.createElement("div");
@@ -36,7 +43,58 @@ function setState() {
         div.style.bottom = bottomPadding + "vh"; 
         div.style.left = -6.25 + (((i)/10 * Math.floor(lengthOfRing / noOfTowers))/2) + "vw";
         bottomPadding += 2.5;
-        firstRing.appendChild(div);
+        towers[1].push(div);
+    }
+    renderTowers();
+}
+
+function renderTowers() {
+    for (var i=1; i<=noOfTowers; i++) {
+        let towerTemp = document.getElementById(i);
+        for (var j=0; j<towers[i].length; j++) {
+            towerTemp.appendChild(towers[i][j]);
+        }
+    }
+}
+
+function setSelectedColors(selectedTower) {
+    let selectedRing = towers[selectedTower][towers[selectedTower].length-1];
+    selectedRing.style.border = "3px solid skyblue";
+    for (var i=1; i<=noOfTowers; i++) {
+       if (towers[i].length == 0 || parseInt(towers[selectedTower][towers[selectedTower].length-1].style.width) < parseInt(towers[i][towers[i].length-1].style.width)) {
+            document.getElementById(i).style.border = "3px solid skyblue";
+            document.getElementById(i).style.borderBottom = "none";
+        }
+    }
+}
+
+function unselectAll() {
+    for (var i=0; i<noOfTowers; i++) {
+        document.getElementById(i+1).style.border = "none";
+    }
+    for (var i=1; i<=noOfTowers; i++) {
+        if (towers[i].length != 0)
+            towers[i][towers[i].length-1].style.border = "none";
+    }
+}
+
+function moveOn(towerId) {
+    if (isRingSelected) {
+        if (towers[towerId].length == 0 || parseInt(towers[selectedTower][towers[selectedTower].length-1].style.width) < parseInt(towers[towerId][towers[towerId].length-1].style.width)) {
+            towers[towerId].push(towers[selectedTower].pop());
+            isRingSelected = false;
+            unselectAll();
+            renderTowers();
+        } else {
+            isRingSelected = false;
+            unselectAll();
+        }
+    } else {
+        if (towers[towerId].length > 0) {
+            isRingSelected = true;
+            selectedTower = towerId;
+            setSelectedColors(selectedTower);
+        }
     }
 }
 
