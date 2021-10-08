@@ -8,18 +8,26 @@
 <body>
   <h1 id="title">Tower of Hanoi</h1>
   <div id="towerBox">
-    <ul>
-      <li>
-        <div class="tower"></div>
-      </li>
-      <li>
-        <div class="tower" style="background: #DF2029"></div>
-      </li>
-      <li>
-        <div class="tower" style="background: #E4405F"></div>
-      </li>
+    <ul id="towerList">
     </ul>
       <div id="towerBase"></div>
   </div>  
+  <div id="optionBox">
+    <div id="noOfTowers" class="options">
+      <h3>Towers</h3>
+      <button onclick="subtract(0)">-</button>
+      <span id="towerDisp">5</span>
+      <button onclick="add(0)">+</button>
+    </div>
+    <div id="noOfRings" class="options">
+      <h3>Rings</h3>
+      <button onclick="subtract(1)">-</button>
+      <span id="ringDisp">5</span>
+      <button onclick="add(1)">+</button>
+    </div>
+  </div>
+    <div id="submitButton" onclick="setState()">Apply</div>
+
+    <script src="index.js"></script>
 </body>
 </html>
