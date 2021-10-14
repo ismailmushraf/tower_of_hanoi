@@ -1,130 +1,92 @@
-let towerColors = ["#F57D00", "#9c27b0", "#7e57c2", "#c2185b", "#4a148c", "#64b5f6", "#f50057", "#8c9eff", "#ff8a80", "#ef5350"];
-let ringColors = ["#C71585", "#9932CC", "#DC143C", "#FFA500","#FFD700", "#32CD32", "#20B2AA", "#000080", "#D2B48C", "#7FFFD4",];
+const ringColors = ["#C71585", "#9932CC", "#DC143C", "#FFA500","#FFD700", "#32CD32", "#20B2AA", "#000080"];
 
-let ringDisp = document.getElementById("ringDisp");
-let towerDisp = document.getElementById("towerDisp");
-let lengthOfRing = 45;
-let towerList = document.getElementById("towerList");
+const ringDisp = document.getElementById("ringDisp");
+const noOfTowers = 3;
+let noOfRings = ringDisp.innerText;
+const towerBaseBottom = 46; // in pixels
+const widthOfLongDisk = 95; // in pixels
+let towerDivs = document.getElementsByClassName("tower");
 let towers = {};
-let isRingSelected = false;
-var selectedTower;
-let noOfRings;
-let noOfTowers;
-    
 
-function setDefaultState() {
-    ringDisp.innerText = 8;
-    towerDisp.innerText = 3;
-    setState();
+function initializeTowers() {
+    towers = {
+        1: [towerDivs[0]],
+        2: [towerDivs[1]],
+        3: [towerDivs[2]]
+    };
+}
+
+function drag(ev) {
+    ev.dataTransfer.setData("towerNo", ev.target.attributes.towerno.value);    
+}
+
+function allowDrop(ev) {
+    ev.preventDefault();
+}
+
+function drop(ev) {
+    ev.preventDefault();
+    const currentTower = ev.dataTransfer.getData("towerno");
+    const targetTower = ev.target.id;
+    console.log(towers[currentTower], towers[targetTower]);
+    const currentTowerLength = towers[currentTower].length;
+    const targetTowerLength = towers[targetTower].length;
+
+    if (towers[targetTower].length == 1 || towers[currentTower][currentTowerLength - 1].style.width < towers[targetTower][targetTowerLength - 1].style.width) {
+        towers[targetTower].push(towers[currentTower].pop());
+        console.log(towers);
+    }
+    renderTowersObject();
 }
 
 function setState() {
-    noOfRings = parseInt(ringDisp.innerText);
-    noOfTowers = parseInt(towerDisp.innerText);
-    
-    towerList.innerHTML = "";
-    for (var i=0; i<noOfTowers; i++) {
-        var li = document.createElement("li");
-        var div = document.createElement("div");
-        div.setAttribute("id", i+1);
-        div.setAttribute("class", "tower");
-        div.setAttribute("onclick", "moveOn(this.id)");
-        div.style.background = towerColors[i];
-        li.appendChild(div);
-        towerList.appendChild(li);
-        towers[i+1] = [];
-    }
-    let bottomPadding = 3;
-    for (var i=0; i<noOfRings; i++) {
-        var div = document.createElement("div");
+    initializeTowers();
+    noOfRings = ringDisp.innerText;
+    for (let i=1; i<=noOfRings; i++) {
+        const div = document.createElement("div");
         div.setAttribute("class", "ring");
-        div.style.width = Math.floor(lengthOfRing / noOfTowers) - ((i)/10 * Math.floor(lengthOfRing / noOfTowers)) + "vw";
-        div.style.background = ringColors[i];
-        div.style.bottom = bottomPadding + "vh"; 
-        div.style.left = -6.25 + (((i)/10 * Math.floor(lengthOfRing / noOfTowers))/2) + "vw";
-        bottomPadding += 2.5;
-        towers[1].push(div);
+        div.style.background = ringColors[i-1];
+        div.style.width = widthOfLongDisk - (8 * (i-1)) + "px"; 
+        towers["1"].push(div);
     }
-    renderTowers();
+    console.log(towers)
+    renderTowersObject();
 }
 
-function renderTowers() {
-    for (var i=1; i<=noOfTowers; i++) {
-        let towerTemp = document.getElementById(i);
-        for (var j=0; j<towers[i].length; j++) {
-            towerTemp.appendChild(towers[i][j]);
+function renderTowersObject() {
+    for (let i=1; i<=3; i++) {
+        const tower = document.getElementById(i);
+        tower.innerHTML = "";
+        tower.appendChild(towers[i][0]);
+        for (let j=1; j<=(towers[i].length-1)&&towers[i].length>1; j++) {
+            console.log(i, j);
+            towers[i][j].style.bottom = towerBaseBottom + ((j-1) * 15) + "px"; 
+            if (j == towers[i].length - 1) {
+                towers[i][j].setAttribute("ondragstart", "drag(event)");
+                towers[i][j].setAttribute("draggable", "true");
+                towers[i][j].setAttribute("towerno", i);
+            }
+            tower.appendChild(towers[i][j]);
         }
     }
 }
 
-function setSelectedColors(selectedTower) {
-    let selectedRing = towers[selectedTower][towers[selectedTower].length-1];
-    selectedRing.style.border = "3px solid skyblue";
-    for (var i=1; i<=noOfTowers; i++) {
-       if (towers[i].length == 0 || parseInt(towers[selectedTower][towers[selectedTower].length-1].style.width) < parseInt(towers[i][towers[i].length-1].style.width)) {
-            document.getElementById(i).style.border = "3px solid skyblue";
-            document.getElementById(i).style.borderBottom = "none";
-        }
-    }
-}
-
-function unselectAll() {
-    for (var i=0; i<noOfTowers; i++) {
-        document.getElementById(i+1).style.border = "none";
-    }
-    for (var i=1; i<=noOfTowers; i++) {
-        if (towers[i].length != 0)
-            towers[i][towers[i].length-1].style.border = "none";
-    }
-}
-
-function moveOn(towerId) {
-    if (isRingSelected) {
-        if (towers[towerId].length == 0 || parseInt(towers[selectedTower][towers[selectedTower].length-1].style.width) < parseInt(towers[towerId][towers[towerId].length-1].style.width)) {
-            towers[towerId].push(towers[selectedTower].pop());
-            isRingSelected = false;
-            unselectAll();
-            renderTowers();
-        } else {
-            isRingSelected = false;
-            unselectAll();
-        }
-    } else {
-        if (towers[towerId].length > 0) {
-            isRingSelected = true;
-            selectedTower = towerId;
-            setSelectedColors(selectedTower);
-        }
-    }
-}
-
-function add(val) {
+function add() {
     let temp = 0;
-    if (val) {
-        temp = parseInt(ringDisp.innerText);
-        if (temp >= 3 && temp < 8)
-            ringDisp.innerText = temp + 1;
-    } else {
-        temp = parseInt(towerDisp.innerText);
-        if (temp >= 3 && temp < 3)
-            towerDisp.innerText = temp + 1;
+    temp = parseInt(ringDisp.innerText);
+    if (temp >= 3 && temp < 8) {
+        ringDisp.innerText = temp + 1;
     }
+    setState();
 }
 
-function subtract(val) {
+function subtract() {
     let temp = 0;
-    if (val) {
-        temp = parseInt(ringDisp.innerText);
-        if (temp > 3 && temp <= 8)
-            ringDisp.innerText = temp - 1;
-    } else {
-        temp = parseInt(towerDisp.innerText);
-        if (temp > 3 && temp <= 3)
-            towerDisp.innerText = temp - 1;
+    temp = parseInt(ringDisp.innerText);
+    if (temp > 3 && temp <= 8) {
+        ringDisp.innerText = temp - 1;
     }
+    setState();
 }
 
-setDefaultState()
-
-
-
+setState()
