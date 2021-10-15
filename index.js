@@ -26,15 +26,16 @@ function allowDrop(ev) {
 
 function drop(ev) {
     ev.preventDefault();
-    const currentTower = ev.dataTransfer.getData("towerno");
-    const targetTower = ev.target.id;
-    console.log(towers[currentTower], towers[targetTower]);
-    const currentTowerLength = towers[currentTower].length;
-    const targetTowerLength = towers[targetTower].length;
+    let currentTower = ev.dataTransfer.getData("towerno");
+    let targetTower = ev.target.id;
+    if (!targetTower) {
+        targetTower = ev.target.attributes.towerno.value;
+    }
+    let currentTowerLength = towers[currentTower].length;
+    let targetTowerLength = towers[targetTower].length;
 
     if (towers[targetTower].length == 1 || towers[currentTower][currentTowerLength - 1].style.width < towers[targetTower][targetTowerLength - 1].style.width) {
         towers[targetTower].push(towers[currentTower].pop());
-        console.log(towers);
     }
     renderTowersObject();
 }
@@ -49,7 +50,6 @@ function setState() {
         div.style.width = widthOfLongDisk - (8 * (i-1)) + "px"; 
         towers["1"].push(div);
     }
-    console.log(towers)
     renderTowersObject();
 }
 
@@ -59,8 +59,8 @@ function renderTowersObject() {
         tower.innerHTML = "";
         tower.appendChild(towers[i][0]);
         for (let j=1; j<=(towers[i].length-1)&&towers[i].length>1; j++) {
-            console.log(i, j);
             towers[i][j].style.bottom = towerBaseBottom + ((j-1) * 15) + "px"; 
+            towers[i][j].setAttribute("draggable", "true");
             if (j == towers[i].length - 1) {
                 towers[i][j].setAttribute("ondragstart", "drag(event)");
                 towers[i][j].setAttribute("draggable", "true");
