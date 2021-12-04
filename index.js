@@ -61,6 +61,7 @@ function renderTowersObject() {
         for (let j=1; j<=(towers[i].length-1)&&towers[i].length>1; j++) {
             towers[i][j].style.bottom = towerBaseBottom + ((j-1) * 15) + "px"; 
             towers[i][j].setAttribute("draggable", "true");
+            towers[i][j].setAttribute("draggable", "false");
             if (j == towers[i].length - 1) {
                 towers[i][j].setAttribute("ondragstart", "drag(event)");
                 towers[i][j].setAttribute("draggable", "true");
